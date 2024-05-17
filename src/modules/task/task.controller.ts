@@ -532,6 +532,7 @@ export class TaskController {
   async getTaskByMonth(
     @Body() data: { userId: number; year: string; month: string },
   ) {
+    console.time();
     const { userId, year, month } = data;
     if (!userId || !year || !month) {
       return {
@@ -540,6 +541,7 @@ export class TaskController {
         data: {},
       };
     }
+    console.timeEnd();
     return await this.taskService.getTaskByMonth(userId, year, month);
   }
 }

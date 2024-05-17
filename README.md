@@ -1,1 +1,2 @@
-https://timor.tech/api/holiday
+ npm run build
+ vercel --prod

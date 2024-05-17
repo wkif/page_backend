@@ -20,7 +20,6 @@ import { TaskHistory } from './entity/taskHistory';
 import creatFileHash from 'src/utils/createHash';
 import { format } from 'date-fns';
 import { HttpService } from '@nestjs/axios';
-import { map } from 'rxjs/operators';
 @Injectable()
 export class TaskService {
   constructor(
