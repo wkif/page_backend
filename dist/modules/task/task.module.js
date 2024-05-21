@@ -21,6 +21,7 @@ const user_entity_1 = require("../user/entity/user.entity");
 const user_service_1 = require("../user/user.service");
 const app_service_1 = require("../../app.service");
 const axios_1 = require("@nestjs/axios");
+const { uploadsPath } = (0, index_1.default)()();
 let TaskModule = class TaskModule {
 };
 exports.TaskModule = TaskModule;
@@ -30,7 +31,7 @@ exports.TaskModule = TaskModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([task_entity_1.Task, user_entity_1.User, taskHistory_1.TaskHistory]),
             platform_express_1.MulterModule.register({
                 storage: (0, multer_1.diskStorage)({
-                    destination: (0, index_1.default)().uploadsPath,
+                    destination: uploadsPath,
                     filename: (req, file, callback) => {
                         const fileName = `${req.body.userId}__${req.body.type == 1 ? 'daily' : 'monthly'}__${new Date().getTime() + path.extname(file.originalname)}`;
                         return callback(null, fileName);

@@ -20,6 +20,7 @@ import { TaskHistory } from './entity/taskHistory';
 import creatFileHash from 'src/utils/createHash';
 import { format } from 'date-fns';
 import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 const { uploadsPath, cachePath } = config()();
 @Injectable()
 export class TaskService {
@@ -599,9 +600,7 @@ export class TaskService {
     const days = new Date(year, month, 0).getDate();
     const TaskLIst_estimate = [];
     const TaskLIst_actual = [];
-    const HolidayData = await this.getHolidayData(
-      `${year}-${month < 10 ? '0' + month : month}`,
-    );
+
     for (let i = 1; i <= days; i++) {
       const day = i < 10 ? '0' + i : i;
       const date = `${year}-${month < 10 ? '0' + month : month}-${day}`;
@@ -640,19 +639,35 @@ export class TaskService {
       code: 200,
       msg: 'ok',
       data: {
-        holidayData: HolidayData,
         TaskLIst_estimate,
         TaskLIst_actual,
       },
     };
   }
-
-  async getHolidayData(date) {
-    const res = await this.httpService
+  async getHoildayByMonth(userId, year, month) {
+    const user = await this.userService.getUserByid(userId);
+    if (!user) {
+      return {
+        code: 500,
+        msg: '用户不存在',
+        data: null,
+      };
+    }
+    const date = `${year}-${month < 10 ? '0' + month : month}`;
+    const HolidayData = await this.httpService
       .get(`https://api.haoshenqi.top/holiday?date=${date}`)
       .toPromise()
-      .then((res) => res.data);
+      .then((res) => res.data)
+      .catch((e) => {
+        throw new Error('internal communication error' + e);
+      });
     //  status: 0普通工作日1周末双休日2需要补班的工作日3法定节假日
-    return res;
+    return {
+      code: 200,
+      msg: 'ok',
+      data: {
+        holidayData: HolidayData,
+      },
+    };
   }
 }

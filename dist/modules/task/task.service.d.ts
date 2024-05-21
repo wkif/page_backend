@@ -82,10 +82,15 @@ export declare class TaskService {
         code: number;
         msg: string;
         data: {
-            holidayData: any;
             TaskLIst_estimate: any[];
             TaskLIst_actual: any[];
         };
     }>;
-    getHolidayData(date: any): Promise<any>;
+    getHoildayByMonth(userId: any, year: any, month: any): Promise<{
+        code: number;
+        msg: string;
+        data: {
+            holidayData: any;
+        };
+    }>;
 }

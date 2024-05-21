@@ -20,6 +20,7 @@ const typeorm_2 = require("@nestjs/typeorm");
 const path = require("path");
 const fs = require("fs");
 const index_1 = require("../../config/index");
+const { uploadsPath } = (0, index_1.default)()();
 let UserService = class UserService {
     constructor(user) {
         this.user = user;
@@ -104,7 +105,7 @@ let UserService = class UserService {
         });
         if (type == 1) {
             if (user.dailyTemplate) {
-                const filePath = path.resolve((0, index_1.default)().uploadsPath, user.dailyTemplate);
+                const filePath = path.resolve(uploadsPath, user.dailyTemplate);
                 if (fs.existsSync(filePath)) {
                     fs.unlinkSync(filePath);
                 }
@@ -113,7 +114,7 @@ let UserService = class UserService {
         }
         else if (type == 2) {
             if (user.monthlyTemplate) {
-                const filePath = path.resolve((0, index_1.default)().uploadsPath, user.monthlyTemplate);
+                const filePath = path.resolve(uploadsPath, user.monthlyTemplate);
                 if (fs.existsSync(filePath)) {
                     fs.unlinkSync(filePath);
                 }
@@ -134,14 +135,14 @@ let UserService = class UserService {
             },
         });
         if (type == 1) {
-            const filePath = path.resolve((0, index_1.default)().uploadsPath, user.dailyTemplate);
+            const filePath = path.resolve(uploadsPath, user.dailyTemplate);
             if (!fs.existsSync(filePath)) {
                 return false;
             }
             return filePath;
         }
         else if (type == 2) {
-            const filePath = path.resolve((0, index_1.default)().uploadsPath, user.monthlyTemplate);
+            const filePath = path.resolve(uploadsPath, user.monthlyTemplate);
             if (!fs.existsSync(filePath)) {
                 return false;
             }

@@ -1,7 +1,5 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-// import { FileInterceptor } from '@nestjs/platform-express';
-
 import { AppService } from './app.service';
 import { Public } from './common/public.decorator';
 import { map } from 'rxjs/operators';

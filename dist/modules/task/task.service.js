@@ -29,6 +29,7 @@ const taskHistory_1 = require("./entity/taskHistory");
 const createHash_1 = require("../../utils/createHash");
 const date_fns_1 = require("date-fns");
 const axios_1 = require("@nestjs/axios");
+const { uploadsPath, cachePath } = (0, index_1.default)()();
 let TaskService = class TaskService {
     constructor(task, taskHistory, userService, httpService) {
         this.task = task;
@@ -185,7 +186,7 @@ let TaskService = class TaskService {
                 data: null,
             };
         }
-        const filePath = path.resolve((0, index_1.default)().uploadsPath, user.dailyTemplate);
+        const filePath = path.resolve(uploadsPath, user.dailyTemplate);
         if (!fs.existsSync(filePath)) {
             return {
                 code: 500,
@@ -194,11 +195,11 @@ let TaskService = class TaskService {
             };
         }
         const templateData = await (0, readTemplate_1.default)(filePath);
-        if (!fs.existsSync((0, index_1.default)().cachePath)) {
-            fs.mkdirSync((0, index_1.default)().cachePath);
+        if (!fs.existsSync(cachePath)) {
+            fs.mkdirSync(cachePath);
         }
-        const cachePath = path.resolve((0, index_1.default)().cachePath, fileName);
-        fs.copyFile(filePath, cachePath, (err) => {
+        const CachePath = path.resolve(cachePath, fileName);
+        fs.copyFile(filePath, CachePath, (err) => {
             if (err) {
                 return {
                     code: 500,
@@ -260,7 +261,7 @@ let TaskService = class TaskService {
                 data: null,
             };
         }
-        const filePath = path.resolve((0, index_1.default)().cachePath, history.fileName);
+        const filePath = path.resolve(cachePath, history.fileName);
         if (!fs.existsSync(filePath)) {
             return {
                 code: 500,
@@ -317,7 +318,7 @@ let TaskService = class TaskService {
                 data: null,
             };
         }
-        const filePath = path.resolve((0, index_1.default)().uploadsPath, user.monthlyTemplate);
+        const filePath = path.resolve(uploadsPath, user.monthlyTemplate);
         if (!fs.existsSync(filePath)) {
             return {
                 code: 500,
@@ -326,11 +327,11 @@ let TaskService = class TaskService {
             };
         }
         const templateData = await (0, readTemplate_1.default)(filePath);
-        if (!fs.existsSync((0, index_1.default)().cachePath)) {
-            fs.mkdirSync((0, index_1.default)().cachePath);
+        if (!fs.existsSync(cachePath)) {
+            fs.mkdirSync(cachePath);
         }
-        const cachePath = path.resolve((0, index_1.default)().cachePath, fileName);
-        fs.copyFile(filePath, cachePath, (err) => {
+        const CachePath = path.resolve(cachePath, fileName);
+        fs.copyFile(filePath, CachePath, (err) => {
             if (err) {
                 return {
                     code: 500,
@@ -409,7 +410,7 @@ let TaskService = class TaskService {
         else {
             history.reportDateEnd = '';
         }
-        const hash = (0, createHash_1.default)(path.resolve((0, index_1.default)().cachePath, filename));
+        const hash = (0, createHash_1.default)(path.resolve(cachePath, filename));
         if (hash.code === 1) {
             history.fileHash = hash.data;
         }
@@ -472,7 +473,7 @@ let TaskService = class TaskService {
                 data: null,
             };
         }
-        const filePath = path.resolve((0, index_1.default)().cachePath, history.fileName);
+        const filePath = path.resolve(cachePath, history.fileName);
         if (!fs.existsSync(filePath)) {
             return {
                 code: 500,
@@ -518,7 +519,7 @@ let TaskService = class TaskService {
             code: 200,
             msg: 'ok',
             data: {
-                filePath: path.resolve((0, index_1.default)().cachePath, history.fileName),
+                filePath: path.resolve(cachePath, history.fileName),
                 fileName: history.fileName,
             },
         };
@@ -535,7 +536,6 @@ let TaskService = class TaskService {
         const days = new Date(year, month, 0).getDate();
         const TaskLIst_estimate = [];
         const TaskLIst_actual = [];
-        const HolidayData = await this.getHolidayData(`${year}-${month < 10 ? '0' + month : month}`);
         for (let i = 1; i <= days; i++) {
             const day = i < 10 ? '0' + i : i;
             const date = `${year}-${month < 10 ? '0' + month : month}-${day}`;
@@ -574,18 +574,35 @@ let TaskService = class TaskService {
             code: 200,
             msg: 'ok',
             data: {
-                holidayData: HolidayData,
                 TaskLIst_estimate,
                 TaskLIst_actual,
             },
         };
     }
-    async getHolidayData(date) {
-        const res = await this.httpService
+    async getHoildayByMonth(userId, year, month) {
+        const user = await this.userService.getUserByid(userId);
+        if (!user) {
+            return {
+                code: 500,
+                msg: '用户不存在',
+                data: null,
+            };
+        }
+        const date = `${year}-${month < 10 ? '0' + month : month}`;
+        const HolidayData = await this.httpService
             .get(`https://api.haoshenqi.top/holiday?date=${date}`)
             .toPromise()
-            .then((res) => res.data);
-        return res;
+            .then((res) => res.data)
+            .catch((e) => {
+            throw new Error('internal communication error' + e);
+        });
+        return {
+            code: 200,
+            msg: 'ok',
+            data: {
+                holidayData: HolidayData,
+            },
+        };
     }
 };
 exports.TaskService = TaskService;

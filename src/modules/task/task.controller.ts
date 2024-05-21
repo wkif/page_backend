@@ -532,6 +532,20 @@ export class TaskController {
   async getTaskByMonth(
     @Body() data: { userId: number; year: string; month: string },
   ) {
+    const { userId, year, month } = data;
+    if (!userId || !year || !month) {
+      return {
+        code: 500,
+        msg: '请完整填写信息',
+        data: {},
+      };
+    }
+    return await this.taskService.getTaskByMonth(userId, year, month);
+  }
+  @Post('getHoildayByMonth')
+  async getHoildayByMonth(
+    @Body() data: { userId: number; year: string; month: string },
+  ) {
     console.time();
     const { userId, year, month } = data;
     if (!userId || !year || !month) {
@@ -542,6 +556,6 @@ export class TaskController {
       };
     }
     console.timeEnd();
-    return await this.taskService.getTaskByMonth(userId, year, month);
+    return await this.taskService.getHoildayByMonth(userId, year, month);
   }
 }

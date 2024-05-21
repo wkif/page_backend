@@ -156,9 +156,23 @@ export declare class TaskController {
         code: number;
         msg: string;
         data: {
-            holidayData: any;
             TaskLIst_estimate: any[];
             TaskLIst_actual: any[];
+        };
+    } | {
+        code: number;
+        msg: string;
+        data: {};
+    }>;
+    getHoildayByMonth(data: {
+        userId: number;
+        year: string;
+        month: string;
+    }): Promise<{
+        code: number;
+        msg: string;
+        data: {
+            holidayData: any;
         };
     } | {
         code: number;

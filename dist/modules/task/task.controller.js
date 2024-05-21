@@ -329,6 +329,17 @@ let TaskController = class TaskController {
         stream.pipe(response);
     }
     async getTaskByMonth(data) {
+        const { userId, year, month } = data;
+        if (!userId || !year || !month) {
+            return {
+                code: 500,
+                msg: '请完整填写信息',
+                data: {},
+            };
+        }
+        return await this.taskService.getTaskByMonth(userId, year, month);
+    }
+    async getHoildayByMonth(data) {
         console.time();
         const { userId, year, month } = data;
         if (!userId || !year || !month) {
@@ -339,7 +350,7 @@ let TaskController = class TaskController {
             };
         }
         console.timeEnd();
-        return await this.taskService.getTaskByMonth(userId, year, month);
+        return await this.taskService.getHoildayByMonth(userId, year, month);
     }
 };
 exports.TaskController = TaskController;
@@ -456,6 +467,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "getTaskByMonth", null);
+__decorate([
+    (0, common_1.Post)('getHoildayByMonth'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TaskController.prototype, "getHoildayByMonth", null);
 exports.TaskController = TaskController = __decorate([
     (0, common_1.Controller)('task'),
     __metadata("design:paramtypes", [task_service_1.TaskService,
