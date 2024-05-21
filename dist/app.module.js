@@ -22,8 +22,8 @@ const core_1 = require("@nestjs/core");
 const links_module_1 = require("./modules/links/links.module");
 const task_module_1 = require("./modules/task/task.module");
 const axios_1 = require("@nestjs/axios");
-const config_2 = require("./config");
-const { database } = (0, config_2.default)()();
+const index_1 = require("./config/index");
+const { database } = (0, index_1.default)()();
 console.log('database', database);
 let AppModule = class AppModule {
 };
@@ -33,7 +33,7 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                load: [config_2.default],
+                load: [index_1.default],
             }),
             typeorm_1.TypeOrmModule.forRoot(database),
             platform_express_1.MulterModule.register({

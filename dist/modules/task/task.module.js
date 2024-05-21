@@ -11,7 +11,7 @@ const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
 const path = require("path");
-const config_1 = require("../../config");
+const index_1 = require("../../config/index");
 const task_service_1 = require("./task.service");
 const task_controller_1 = require("./task.controller");
 const task_entity_1 = require("./entity/task.entity");
@@ -30,7 +30,7 @@ exports.TaskModule = TaskModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([task_entity_1.Task, user_entity_1.User, taskHistory_1.TaskHistory]),
             platform_express_1.MulterModule.register({
                 storage: (0, multer_1.diskStorage)({
-                    destination: (0, config_1.default)().uploadsPath,
+                    destination: (0, index_1.default)().uploadsPath,
                     filename: (req, file, callback) => {
                         const fileName = `${req.body.userId}__${req.body.type == 1 ? 'daily' : 'monthly'}__${new Date().getTime() + path.extname(file.originalname)}`;
                         return callback(null, fileName);

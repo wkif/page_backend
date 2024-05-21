@@ -21,7 +21,7 @@ const user_service_1 = require("../user/user.service");
 const path = require("path");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
-const config_1 = require("../../config");
+const index_1 = require("../../config/index");
 const readTemplate_1 = require("../../utils/readTemplate");
 const writeTemplate_1 = require("../../utils/writeTemplate");
 const emailText_1 = require("../../utils/emailText");
@@ -185,7 +185,7 @@ let TaskService = class TaskService {
                 data: null,
             };
         }
-        const filePath = path.resolve((0, config_1.default)().uploadsPath, user.dailyTemplate);
+        const filePath = path.resolve((0, index_1.default)().uploadsPath, user.dailyTemplate);
         if (!fs.existsSync(filePath)) {
             return {
                 code: 500,
@@ -194,10 +194,10 @@ let TaskService = class TaskService {
             };
         }
         const templateData = await (0, readTemplate_1.default)(filePath);
-        if (!fs.existsSync((0, config_1.default)().cachePath)) {
-            fs.mkdirSync((0, config_1.default)().cachePath);
+        if (!fs.existsSync((0, index_1.default)().cachePath)) {
+            fs.mkdirSync((0, index_1.default)().cachePath);
         }
-        const cachePath = path.resolve((0, config_1.default)().cachePath, fileName);
+        const cachePath = path.resolve((0, index_1.default)().cachePath, fileName);
         fs.copyFile(filePath, cachePath, (err) => {
             if (err) {
                 return {
@@ -260,7 +260,7 @@ let TaskService = class TaskService {
                 data: null,
             };
         }
-        const filePath = path.resolve((0, config_1.default)().cachePath, history.fileName);
+        const filePath = path.resolve((0, index_1.default)().cachePath, history.fileName);
         if (!fs.existsSync(filePath)) {
             return {
                 code: 500,
@@ -317,7 +317,7 @@ let TaskService = class TaskService {
                 data: null,
             };
         }
-        const filePath = path.resolve((0, config_1.default)().uploadsPath, user.monthlyTemplate);
+        const filePath = path.resolve((0, index_1.default)().uploadsPath, user.monthlyTemplate);
         if (!fs.existsSync(filePath)) {
             return {
                 code: 500,
@@ -326,10 +326,10 @@ let TaskService = class TaskService {
             };
         }
         const templateData = await (0, readTemplate_1.default)(filePath);
-        if (!fs.existsSync((0, config_1.default)().cachePath)) {
-            fs.mkdirSync((0, config_1.default)().cachePath);
+        if (!fs.existsSync((0, index_1.default)().cachePath)) {
+            fs.mkdirSync((0, index_1.default)().cachePath);
         }
-        const cachePath = path.resolve((0, config_1.default)().cachePath, fileName);
+        const cachePath = path.resolve((0, index_1.default)().cachePath, fileName);
         fs.copyFile(filePath, cachePath, (err) => {
             if (err) {
                 return {
@@ -409,7 +409,7 @@ let TaskService = class TaskService {
         else {
             history.reportDateEnd = '';
         }
-        const hash = (0, createHash_1.default)(path.resolve((0, config_1.default)().cachePath, filename));
+        const hash = (0, createHash_1.default)(path.resolve((0, index_1.default)().cachePath, filename));
         if (hash.code === 1) {
             history.fileHash = hash.data;
         }
@@ -472,7 +472,7 @@ let TaskService = class TaskService {
                 data: null,
             };
         }
-        const filePath = path.resolve((0, config_1.default)().cachePath, history.fileName);
+        const filePath = path.resolve((0, index_1.default)().cachePath, history.fileName);
         if (!fs.existsSync(filePath)) {
             return {
                 code: 500,
@@ -518,7 +518,7 @@ let TaskService = class TaskService {
             code: 200,
             msg: 'ok',
             data: {
-                filePath: path.resolve((0, config_1.default)().cachePath, history.fileName),
+                filePath: path.resolve((0, index_1.default)().cachePath, history.fileName),
                 fileName: history.fileName,
             },
         };

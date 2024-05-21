@@ -13,8 +13,8 @@ exports.JwtStrategy = void 0;
 const passport_jwt_1 = require("passport-jwt");
 const passport_1 = require("@nestjs/passport");
 const common_1 = require("@nestjs/common");
-const config_1 = require("../../config");
-const { JWT_SECRET } = (0, config_1.default)()();
+const index_1 = require("../../config/index");
+const { JWT_SECRET } = (0, index_1.default)()();
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     constructor() {
         super({

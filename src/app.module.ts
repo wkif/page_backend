@@ -17,7 +17,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { LinksModule } from './modules/links/links.module';
 import { TaskModule } from './modules/task/task.module';
 import { HttpModule } from '@nestjs/axios';
-import customConfig from './config';
+import customConfig from 'src/config/index';
 const { database } = customConfig()();
 console.log('database', database);
 @Module({

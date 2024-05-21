@@ -12,8 +12,8 @@ const auth_service_1 = require("./auth.service");
 const passport_1 = require("@nestjs/passport");
 const jwt_1 = require("@nestjs/jwt");
 const jwt_strategy_1 = require("./jwt.strategy");
-const config_1 = require("../../config");
-const { JWT_SECRET } = (0, config_1.default)()();
+const index_1 = require("../../config/index");
+const { JWT_SECRET } = (0, index_1.default)()();
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
