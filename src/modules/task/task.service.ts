@@ -12,7 +12,7 @@ import { UserService } from '../user/user.service';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as nodemailer from 'nodemailer';
-import config from 'src/common/config';
+import config from 'src/config';
 import readTemplate from 'src/utils/readTemplate';
 import writeTemplate from 'src/utils/writeTemplate';
 import createEmailText from 'src/utils/emailText';

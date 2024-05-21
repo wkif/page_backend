@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as path from 'path';
 import * as fs from 'fs';
 
-import config from 'src/common/config';
+import config from 'src/config';
 
 @Injectable()
 export class UserService {

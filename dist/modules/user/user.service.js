@@ -19,7 +19,7 @@ const typeorm_1 = require("typeorm");
 const typeorm_2 = require("@nestjs/typeorm");
 const path = require("path");
 const fs = require("fs");
-const config_1 = require("../../common/config");
+const config_1 = require("../../config");
 let UserService = class UserService {
     constructor(user) {
         this.user = user;

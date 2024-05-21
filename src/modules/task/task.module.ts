@@ -3,7 +3,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
 
-import config from 'src/common/config';
+import config from 'src/config';
 
 import { TaskService } from './task.service';
 import { TaskController } from './task.controller';

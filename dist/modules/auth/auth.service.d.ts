@@ -1,7 +1,9 @@
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 export declare class AuthService {
     private readonly jwtService;
-    constructor(jwtService: JwtService);
+    private readonly configService;
+    constructor(jwtService: JwtService, configService: ConfigService);
     certificate(user: {
         id: number;
         username: string;

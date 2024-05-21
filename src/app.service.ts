@@ -9,7 +9,6 @@ export class AppService {
 
   // 上传文件
   async uploadFile(file: Express.Multer.File) {
-    // const url = process.env.HOST + '/uploads/' + file.filename
     return {
       code: 1,
       name: file.filename,
