@@ -587,7 +587,7 @@ export class TaskService {
       },
     };
   }
-  async getTaskByMonth(userId, year, month) {
+  async getTaskByMonth_e(userId, year, month) {
     const user = await this.userService.getUserByid(userId);
     if (!user) {
       return {
@@ -599,7 +599,6 @@ export class TaskService {
     // 当前月份的所有天数
     const days = new Date(year, month, 0).getDate();
     const TaskLIst_estimate = [];
-    const TaskLIst_actual = [];
 
     for (let i = 1; i <= days; i++) {
       const day = i < 10 ? '0' + i : i;
@@ -619,6 +618,30 @@ export class TaskService {
         date,
         task,
       });
+    }
+    return {
+      code: 200,
+      msg: 'ok',
+      data: TaskLIst_estimate,
+    };
+  }
+  async getTaskByMonth_a(userId, year, month) {
+    const user = await this.userService.getUserByid(userId);
+    if (!user) {
+      return {
+        code: 500,
+        msg: '用户不存在',
+        data: null,
+      };
+    }
+    // 当前月份的所有天数
+    const days = new Date(year, month, 0).getDate();
+    const TaskLIst_actual = [];
+
+    for (let i = 1; i <= days; i++) {
+      const day = i < 10 ? '0' + i : i;
+      const date = `${year}-${month < 10 ? '0' + month : month}-${day}`;
+
       const where2 = {
         user: {
           id: userId,
@@ -638,10 +661,7 @@ export class TaskService {
     return {
       code: 200,
       msg: 'ok',
-      data: {
-        TaskLIst_estimate,
-        TaskLIst_actual,
-      },
+      data: TaskLIst_actual,
     };
   }
   async getHoildayByMonth(userId, year, month) {

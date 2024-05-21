@@ -528,8 +528,40 @@ export class TaskController {
     stream.pipe(response);
   }
 
-  @Post('getTaskByMonth')
-  async getTaskByMonth(
+  // @Post('getTaskByMonth')
+  // async getTaskByMonth(
+  //   @Body() data: { userId: number; year: string; month: string },
+  // ) {
+  //   const { userId, year, month } = data;
+  //   if (!userId || !year || !month) {
+  //     return {
+  //       code: 500,
+  //       msg: '请完整填写信息',
+  //       data: {},
+  //     };
+  //   }
+
+  //   const TaskLIst_estimate = await this.taskService.getTaskByMonth_e(
+  //     userId,
+  //     year,
+  //     month,
+  //   );
+  //   const TaskLIst_actual = await this.taskService.getTaskByMonth_a(
+  //     userId,
+  //     year,
+  //     month,
+  //   );
+  //   return {
+  //     code: 200,
+  //     msg: '成功',
+  //     data: {
+  //       TaskLIst_estimate,
+  //       TaskLIst_actual,
+  //     },
+  //   };
+  // }
+  @Post('getEstimateTaskByMonth')
+  async getEstimateTaskByMonth(
     @Body() data: { userId: number; year: string; month: string },
   ) {
     const { userId, year, month } = data;
@@ -540,13 +572,28 @@ export class TaskController {
         data: {},
       };
     }
-    return await this.taskService.getTaskByMonth(userId, year, month);
+    return await this.taskService.getTaskByMonth_e(userId, year, month);
   }
+
+  @Post('getActualTaskByMonth')
+  async getActualTaskByMonth(
+    @Body() data: { userId: number; year: string; month: string },
+  ) {
+    const { userId, year, month } = data;
+    if (!userId || !year || !month) {
+      return {
+        code: 500,
+        msg: '请完整填写信息',
+        data: {},
+      };
+    }
+    return await this.taskService.getTaskByMonth_e(userId, year, month);
+  }
+
   @Post('getHoildayByMonth')
   async getHoildayByMonth(
     @Body() data: { userId: number; year: string; month: string },
   ) {
-    console.time();
     const { userId, year, month } = data;
     if (!userId || !year || !month) {
       return {
@@ -555,7 +602,6 @@ export class TaskController {
         data: {},
       };
     }
-    console.timeEnd();
     return await this.taskService.getHoildayByMonth(userId, year, month);
   }
 }
