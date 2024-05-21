@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import customConfig from 'src/config/index';
+const { JWT_SECRET } = customConfig()();
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly jwtService: JwtService) {}
 
   async certificate(user: { id: number; username: string; email: string }) {
     const payload = {
@@ -16,7 +14,7 @@ export class AuthService {
     };
     try {
       const token = this.jwtService.sign(payload, {
-        secret: this.configService.get('JWT_SECRET'),
+        secret: JWT_SECRET,
       });
       return {
         code: 200,
