@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
-import customConfig from '../../config';
+import customConfig from 'src/config';
 const { JWT_SECRET } = customConfig()();
 @Module({
   imports: [
