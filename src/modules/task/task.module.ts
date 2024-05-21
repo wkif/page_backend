@@ -14,13 +14,13 @@ import { User } from '../user/entity/user.entity';
 import { UserService } from '../user/user.service';
 import { AppService } from 'src/app.service';
 import { HttpModule } from '@nestjs/axios';
-
+const { uploadsPath } = config()();
 @Module({
   imports: [
     TypeOrmModule.forFeature([Task, User, TaskHistory]),
     MulterModule.register({
       storage: diskStorage({
-        destination: config().uploadsPath,
+        destination: uploadsPath,
         filename: (req, file, callback) => {
           const fileName = `${req.body.userId}__${req.body.type == 1 ? 'daily' : 'monthly'}__${
             new Date().getTime() + path.extname(file.originalname)

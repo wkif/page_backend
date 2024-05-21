@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 import config from 'src/config/index';
-
+const { uploadsPath } = config()();
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(User) private user: Repository<User>) {}
@@ -91,7 +91,7 @@ export class UserService {
     });
     if (type == 1) {
       if (user.dailyTemplate) {
-        const filePath = path.resolve(config().uploadsPath, user.dailyTemplate);
+        const filePath = path.resolve(uploadsPath, user.dailyTemplate);
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
         }
@@ -99,10 +99,7 @@ export class UserService {
       user.dailyTemplate = template;
     } else if (type == 2) {
       if (user.monthlyTemplate) {
-        const filePath = path.resolve(
-          config().uploadsPath,
-          user.monthlyTemplate,
-        );
+        const filePath = path.resolve(uploadsPath, user.monthlyTemplate);
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
         }
@@ -123,13 +120,13 @@ export class UserService {
       },
     });
     if (type == 1) {
-      const filePath = path.resolve(config().uploadsPath, user.dailyTemplate);
+      const filePath = path.resolve(uploadsPath, user.dailyTemplate);
       if (!fs.existsSync(filePath)) {
         return false;
       }
       return filePath;
     } else if (type == 2) {
-      const filePath = path.resolve(config().uploadsPath, user.monthlyTemplate);
+      const filePath = path.resolve(uploadsPath, user.monthlyTemplate);
       if (!fs.existsSync(filePath)) {
         return false;
       }

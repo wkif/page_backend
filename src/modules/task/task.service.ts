@@ -20,6 +20,7 @@ import { TaskHistory } from './entity/taskHistory';
 import creatFileHash from 'src/utils/createHash';
 import { format } from 'date-fns';
 import { HttpService } from '@nestjs/axios';
+const { uploadsPath, cachePath } = config()();
 @Injectable()
 export class TaskService {
   constructor(
@@ -215,7 +216,7 @@ export class TaskService {
         data: null,
       };
     }
-    const filePath = path.resolve(config().uploadsPath, user.dailyTemplate);
+    const filePath = path.resolve(uploadsPath, user.dailyTemplate);
     if (!fs.existsSync(filePath)) {
       return {
         code: 500,
@@ -224,12 +225,12 @@ export class TaskService {
       };
     }
     const templateData = await readTemplate(filePath);
-    // 不存在 config().cachePath路径则创建
-    if (!fs.existsSync(config().cachePath)) {
-      fs.mkdirSync(config().cachePath);
+    // 不存在 cachePath路径则创建
+    if (!fs.existsSync(cachePath)) {
+      fs.mkdirSync(cachePath);
     }
-    const cachePath = path.resolve(config().cachePath, fileName);
-    fs.copyFile(filePath, cachePath, (err) => {
+    const CachePath = path.resolve(cachePath, fileName);
+    fs.copyFile(filePath, CachePath, (err) => {
       if (err) {
         return {
           code: 500,
@@ -297,7 +298,7 @@ export class TaskService {
         data: null,
       };
     }
-    const filePath = path.resolve(config().cachePath, history.fileName);
+    const filePath = path.resolve(cachePath, history.fileName);
     if (!fs.existsSync(filePath)) {
       return {
         code: 500,
@@ -354,7 +355,7 @@ export class TaskService {
         data: null,
       };
     }
-    const filePath = path.resolve(config().uploadsPath, user.monthlyTemplate);
+    const filePath = path.resolve(uploadsPath, user.monthlyTemplate);
     if (!fs.existsSync(filePath)) {
       return {
         code: 500,
@@ -363,12 +364,12 @@ export class TaskService {
       };
     }
     const templateData = await readTemplate(filePath);
-    // 不存在 config().cachePath路径则创建
-    if (!fs.existsSync(config().cachePath)) {
-      fs.mkdirSync(config().cachePath);
+    // 不存在 cachePath路径则创建
+    if (!fs.existsSync(cachePath)) {
+      fs.mkdirSync(cachePath);
     }
-    const cachePath = path.resolve(config().cachePath, fileName);
-    fs.copyFile(filePath, cachePath, (err) => {
+    const CachePath = path.resolve(cachePath, fileName);
+    fs.copyFile(filePath, CachePath, (err) => {
       if (err) {
         return {
           code: 500,
@@ -460,7 +461,7 @@ export class TaskService {
     } else {
       history.reportDateEnd = '';
     }
-    const hash = creatFileHash(path.resolve(config().cachePath, filename));
+    const hash = creatFileHash(path.resolve(cachePath, filename));
     if (hash.code === 1) {
       history.fileHash = hash.data;
     } else {
@@ -523,7 +524,7 @@ export class TaskService {
       };
     }
 
-    const filePath = path.resolve(config().cachePath, history.fileName);
+    const filePath = path.resolve(cachePath, history.fileName);
     if (!fs.existsSync(filePath)) {
       return {
         code: 500,
@@ -580,7 +581,7 @@ export class TaskService {
       code: 200,
       msg: 'ok',
       data: {
-        filePath: path.resolve(config().cachePath, history.fileName),
+        filePath: path.resolve(cachePath, history.fileName),
         fileName: history.fileName,
       },
     };
