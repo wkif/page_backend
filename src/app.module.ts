@@ -17,11 +17,21 @@ import { APP_GUARD } from '@nestjs/core';
 import { LinksModule } from './modules/links/links.module';
 import { TaskModule } from './modules/task/task.module';
 import { HttpModule } from '@nestjs/axios';
+
+export const IS_DEV = process.env.RUNNING_ENV !== 'prod';
+const envFilePath = [];
+if (IS_DEV) {
+  envFilePath.unshift('.env.dev');
+} else {
+  envFilePath.unshift('.env.prod');
+}
+console.log('IS_DEV', IS_DEV, process.env.MYSQL_HOST);
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
+      envFilePath,
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',

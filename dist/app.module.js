@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
+exports.AppModule = exports.IS_DEV = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const config_1 = require("@nestjs/config");
@@ -23,6 +23,15 @@ const core_1 = require("@nestjs/core");
 const links_module_1 = require("./modules/links/links.module");
 const task_module_1 = require("./modules/task/task.module");
 const axios_1 = require("@nestjs/axios");
+exports.IS_DEV = process.env.RUNNING_ENV !== 'prod';
+const envFilePath = [];
+if (exports.IS_DEV) {
+    envFilePath.unshift('.env.dev');
+}
+else {
+    envFilePath.unshift('.env.prod');
+}
+console.log('IS_DEV', exports.IS_DEV, process.env.MYSQL_HOST);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -32,6 +41,7 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 load: [config_2.default],
+                envFilePath,
             }),
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'mysql',
