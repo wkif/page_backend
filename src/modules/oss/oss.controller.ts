@@ -113,6 +113,7 @@ export class OssController {
           msg: 'ok',
           data: {
             url: url,
+            name: fileName,
           },
         };
       } else {
@@ -141,6 +142,7 @@ export class OssController {
           msg: 'ok',
           data: {
             url: url,
+            name: fileName,
           },
         };
       } else {
