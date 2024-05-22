@@ -169,6 +169,10 @@ export class TaskService {
     if (!date) {
       delete where.date;
     }
+    if (!level) {
+      delete where.level;
+    }
+    console.log('where', where);
     const tasks = await this.task.find({
       where: where,
       skip: (page - 1) * 10,
