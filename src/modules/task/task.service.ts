@@ -599,24 +599,28 @@ export class TaskService {
     // 当前月份的所有天数
     const days = new Date(year, month, 0).getDate();
     const TaskLIst_estimate = [];
-
+    const startDate = `${year}-${month < 10 ? '0' + month : month}-01`;
+    const endDate = `${year}-${month < 10 ? '0' + month : month}-${days}`;
+    const where = {
+      user: {
+        id: userId,
+      },
+      estimatedStartDate: Between(startDate, endDate),
+      estimatedEndDate: Between(startDate, endDate),
+    };
+    const taskList = await this.task.find({
+      where,
+    });
     for (let i = 1; i <= days; i++) {
       const day = i < 10 ? '0' + i : i;
       const date = `${year}-${month < 10 ? '0' + month : month}-${day}`;
-      const where = {
-        user: {
-          id: userId,
-        },
-        estimatedStartDate: LessThanOrEqual(date),
-        estimatedEndDate: MoreThanOrEqual(date),
-      };
-      const task = await this.task.findOne({
-        where,
+      const tasks = taskList.filter((item) => {
+        return item.estimatedStartDate <= date && item.estimatedEndDate >= date;
       });
       TaskLIst_estimate.push({
         day: i,
         date,
-        task,
+        tasks,
       });
     }
     return {
@@ -637,25 +641,28 @@ export class TaskService {
     // 当前月份的所有天数
     const days = new Date(year, month, 0).getDate();
     const TaskLIst_actual = [];
-
+    const startDate = `${year}-${month < 10 ? '0' + month : month}-01`;
+    const endDate = `${year}-${month < 10 ? '0' + month : month}-${days}`;
+    const where = {
+      user: {
+        id: userId,
+      },
+      actualStartDate: Between(startDate, endDate),
+      actualEndDate: Between(startDate, endDate),
+    };
+    const taskList = await this.task.find({
+      where,
+    });
     for (let i = 1; i <= days; i++) {
       const day = i < 10 ? '0' + i : i;
       const date = `${year}-${month < 10 ? '0' + month : month}-${day}`;
-
-      const where2 = {
-        user: {
-          id: userId,
-        },
-        actualStartDate: LessThanOrEqual(date),
-        actualEndDate: MoreThanOrEqual(date),
-      };
-      const task2 = await this.task.findOne({
-        where: where2,
+      const tasks = taskList.filter((item) => {
+        return item.actualStartDate <= date && item.actualEndDate >= date;
       });
       TaskLIst_actual.push({
         day: i,
         date,
-        task: task2,
+        tasks,
       });
     }
     return {
