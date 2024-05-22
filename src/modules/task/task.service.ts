@@ -1,14 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Task } from './entity/task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Between,
-  LessThanOrEqual,
-  Like,
-  MoreThanOrEqual,
-  Repository,
-} from 'typeorm';
+import { Between, Like, Repository } from 'typeorm';
 import { UserService } from '../user/user.service';
+import { OssService } from '../oss/oss.service';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as nodemailer from 'nodemailer';
@@ -20,7 +15,7 @@ import { TaskHistory } from './entity/taskHistory';
 import creatFileHash from 'src/utils/createHash';
 import { format } from 'date-fns';
 import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
+import bufferToStream from 'src/utils/bufferToStream';
 const { uploadsPath, cachePath } = config()();
 @Injectable()
 export class TaskService {
@@ -29,6 +24,7 @@ export class TaskService {
     @InjectRepository(TaskHistory) private taskHistory: Repository<TaskHistory>,
     private readonly userService: UserService,
     private readonly httpService: HttpService,
+    private readonly ossService: OssService,
   ) {}
 
   async getTaskById(id, userId) {
@@ -172,7 +168,6 @@ export class TaskService {
     if (!level) {
       delete where.level;
     }
-    console.log('where', where);
     const tasks = await this.task.find({
       where: where,
       skip: (page - 1) * 10,
@@ -221,29 +216,27 @@ export class TaskService {
         data: null,
       };
     }
-    const filePath = path.resolve(uploadsPath, user.dailyTemplate);
-    if (!fs.existsSync(filePath)) {
+    const filePath = 'uploads/' + user.dailyTemplate;
+    const isExist = this.ossService.existObject(filePath);
+    if (!isExist) {
       return {
         code: 500,
         msg: '日报模板文件丢失，请重新上传',
         data: null,
       };
     }
-    const templateData = await readTemplate(filePath);
-    // 不存在 cachePath路径则创建
-    if (!fs.existsSync(cachePath)) {
-      fs.mkdirSync(cachePath);
+    let url = await this.ossService.getFileSignatureUrl(filePath);
+    if (!url) {
+      return {
+        code: 500,
+        msg: '日报模板文件丢失，请重新上传',
+        data: null,
+      };
     }
-    const CachePath = path.resolve(cachePath, fileName);
-    fs.copyFile(filePath, CachePath, (err) => {
-      if (err) {
-        return {
-          code: 500,
-          msg: '日报模板文件丢失，请重新上传',
-          data: null,
-        };
-      }
-    });
+    if (!url.includes('https')) {
+      url = url.replace('http', 'https');
+    }
+    const templateData = await readTemplate(url);
     const tasks = await this.task.find({
       where: {
         user: {
@@ -264,11 +257,19 @@ export class TaskService {
         data: null,
       };
     }
-    const res = await writeTemplate(cachePath, tasks, templateData);
-    if (res) {
+    const saveBuffer = await writeTemplate(url, tasks, templateData);
+    const path = 'cache/' + fileName;
+    const isExist_1 = await this.ossService.existObject(path);
+    if (isExist_1) {
+      await this.ossService.deleteOne(path);
+    }
+    const streams = bufferToStream(saveBuffer);
+    const fileurl = await this.ossService.putStream(streams, path);
+    if (fileurl) {
       const his = await this.addTaskReportHistory(
         userId,
         fileName,
+        fileurl,
         1,
         false,
         date,
@@ -303,8 +304,17 @@ export class TaskService {
         data: null,
       };
     }
-    const filePath = path.resolve(cachePath, history.fileName);
-    if (!fs.existsSync(filePath)) {
+    // const filePath = path.resolve(cachePath, history.fileName);
+    // if (!fs.existsSync(filePath)) {
+    //   return {
+    //     code: 500,
+    //     msg: '无当日日报文件，请重新生成',
+    //     data: null,
+    //   };
+    // }
+    const path = 'cache/' + history.fileName;
+    const isExist = await this.ossService.existObject(path);
+    if (!isExist) {
       return {
         code: 500,
         msg: '无当日日报文件，请重新生成',
@@ -321,7 +331,8 @@ export class TaskService {
         pass: user.emailAuth,
       },
     });
-    const htmlTable = createEmailText(filePath);
+    const url = await this.ossService.getFileSignatureUrl(path);
+    const htmlTable = await createEmailText(url);
     const info = await transporter.sendMail({
       from: user.emailSend,
       to: user.emailReceiver,
@@ -330,7 +341,7 @@ export class TaskService {
       attachments: [
         {
           filename: history.fileName,
-          path: filePath,
+          path: url,
         },
       ],
     });
@@ -407,6 +418,7 @@ export class TaskService {
       const his = await this.addTaskReportHistory(
         userId,
         fileName,
+        'url',
         2,
         false,
         null,
@@ -430,6 +442,7 @@ export class TaskService {
   async addTaskReportHistory(
     userId,
     filename,
+    url,
     reportType,
     hasSendEmail,
     reportDate = null,
@@ -466,7 +479,7 @@ export class TaskService {
     } else {
       history.reportDateEnd = '';
     }
-    const hash = creatFileHash(path.resolve(cachePath, filename));
+    const hash = await creatFileHash(url);
     if (hash.code === 1) {
       history.fileHash = hash.data;
     } else {
@@ -554,7 +567,7 @@ export class TaskService {
     code: number;
     msg: string;
     data: {
-      filePath: string;
+      url: string;
       fileName: string;
     };
   }> {
@@ -582,11 +595,24 @@ export class TaskService {
         data: null,
       };
     }
+    const isExist = await this.ossService.existObject(
+      'cache/' + history.fileName,
+    );
+    if (!isExist) {
+      return {
+        code: 500,
+        msg: '文件不存在',
+        data: null,
+      };
+    }
+    const url = await this.ossService.getFileSignatureUrl(
+      'cache/' + history.fileName,
+    );
     return {
       code: 200,
       msg: 'ok',
       data: {
-        filePath: path.resolve(cachePath, history.fileName),
+        url,
         fileName: history.fileName,
       },
     };

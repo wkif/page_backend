@@ -17,9 +17,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { LinksModule } from './modules/links/links.module';
 import { TaskModule } from './modules/task/task.module';
 import { HttpModule } from '@nestjs/axios';
+import { OssModule } from './modules/oss/oss.module';
 import customConfig from 'src/config/index';
-const { database } = customConfig()();
+const { database, oss } = customConfig()();
 console.log('database', database);
+console.log('oss', oss);
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -45,6 +47,7 @@ console.log('database', database);
     LinksModule,
     TaskModule,
     HttpModule,
+    OssModule,
   ],
   controllers: [AppController],
   providers: [

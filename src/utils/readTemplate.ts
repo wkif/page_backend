@@ -1,14 +1,16 @@
 import { Workbook } from 'exceljs';
+import readFileToBuffer from './readFileToBuffer';
 const readTemplate = async (
-  filePath: string,
+  fileUrl: string,
 ): Promise<{ label: string; row: number; col: number }[]> => {
   const TemplateData: Array<{
     label: string;
     row: number;
     col: number;
   }> = [];
+  const buffer = await readFileToBuffer(fileUrl);
   const workbook = new Workbook();
-  await workbook.xlsx.readFile(filePath);
+  await workbook.xlsx.load(buffer);
   const worksheet = workbook.getWorksheet(1);
   worksheet.eachRow(function (row, rowNumber) {
     const rowValues = row.values;

@@ -12,6 +12,7 @@ import { TaskHistory } from './entity/taskHistory';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/entity/user.entity';
 import { UserService } from '../user/user.service';
+import { OssService } from '../oss/oss.service';
 import { AppService } from 'src/app.service';
 import { HttpModule } from '@nestjs/axios';
 const { uploadsPath } = config()();
@@ -31,7 +32,7 @@ const { uploadsPath } = config()();
     }),
     HttpModule,
   ],
-  providers: [TaskService, UserService, AppService],
+  providers: [TaskService, UserService, AppService, OssService],
   controllers: [TaskController],
 })
 export class TaskModule {}

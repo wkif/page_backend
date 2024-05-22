@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  MethodNotAllowedException,
-  Post,
-  Res,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import * as fs from 'fs';
 import { Response } from 'express';
 import { Readable } from 'stream';
@@ -251,46 +242,46 @@ export class TaskController {
     return await this.taskService.deleteTask(id, userId);
   }
 
-  // 上传文件模板
-  @Post('uploadTemplate')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      fileFilter(
-        req: any,
-        file: Express.Multer.File,
-        callback: (error: Error | null, acceptFile: boolean) => void,
-      ) {
-        if (!file.mimetype.includes('spreadsheetml')) {
-          callback(new MethodNotAllowedException('类型不支持'), false);
-        } else {
-          callback(null, true);
-        }
-      },
-    }),
-  )
-  async uploadFile(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() data: { userId: number; type: number },
-  ) {
-    const { userId, type } = data;
-    if (!userId || !type) {
-      return {
-        code: 500,
-        msg: '请完整填写信息',
-        data: null,
-      };
-    }
-    const user = await this.userService.getUserByid(userId);
-    if (!user) {
-      return {
-        code: 500,
-        msg: '用户不存在',
-        data: null,
-      };
-    }
-    // type为1时为日报，为2时为月报
-    return await this.userService.addTemplate(userId, file.filename, type);
-  }
+  // // 上传文件模板
+  // @Post('uploadTemplate')
+  // @UseInterceptors(
+  //   FileInterceptor('file', {
+  //     fileFilter(
+  //       req: any,
+  //       file: Express.Multer.File,
+  //       callback: (error: Error | null, acceptFile: boolean) => void,
+  //     ) {
+  //       if (!file.mimetype.includes('spreadsheetml')) {
+  //         callback(new MethodNotAllowedException('类型不支持'), false);
+  //       } else {
+  //         callback(null, true);
+  //       }
+  //     },
+  //   }),
+  // )
+  // async uploadFile(
+  //   @UploadedFile() file: Express.Multer.File,
+  //   @Body() data: { userId: number; type: number },
+  // ) {
+  //   const { userId, type } = data;
+  //   if (!userId || !type) {
+  //     return {
+  //       code: 500,
+  //       msg: '请完整填写信息',
+  //       data: null,
+  //     };
+  //   }
+  //   const user = await this.userService.getUserByid(userId);
+  //   if (!user) {
+  //     return {
+  //       code: 500,
+  //       msg: '用户不存在',
+  //       data: null,
+  //     };
+  //   }
+  //   // type为1时为日报，为2时为月报
+  //   return await this.userService.addTemplate(userId, file.filename, type);
+  // }
 
   // 导出日报
   @Post('exportDaily')
@@ -316,7 +307,6 @@ export class TaskController {
       });
       return;
     }
-    // const defaultFileName = `[[userid]]_{{username}}_{{email}}_{{date}}.xlsx`;
     const defaultFileName = `[[userid]]_[[username]]_[[email]]_[[date]].xlsx`;
 
     const dailyTemplateName = user.dailyTemplateName
@@ -468,28 +458,7 @@ export class TaskController {
       });
       return;
     }
-    const res = await this.taskService.downloadHistoryFile(userId, hisId);
-    if (res.code == 200) {
-      const filePath = res.data.filePath;
-      const buffer = fs.readFileSync(filePath);
-      const stream = new Readable();
-      stream.push(buffer);
-      stream.push(null);
-      response.set({
-        'Content-Type':
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'Content-Length': buffer.length,
-        'Content-disposition': `attachment; filename=${encodeURIComponent(res.data.fileName)}`,
-      });
-      stream.pipe(response);
-    } else {
-      response.send({
-        code: 500,
-        msg: res.msg,
-        data: null,
-      });
-      return;
-    }
+    return await this.taskService.downloadHistoryFile(userId, hisId);
   }
 
   @Post('downloadTemplate')
