@@ -216,7 +216,7 @@ export class TaskService {
         data: null,
       };
     }
-    const filePath = 'uploads/' + user.dailyTemplate;
+    const filePath = 'uploads/' + user.id.toString() + '/' + user.dailyTemplate;
     const isExist = this.ossService.existObject(filePath);
     if (!isExist) {
       return {
@@ -258,7 +258,7 @@ export class TaskService {
       };
     }
     const saveBuffer = await writeTemplate(url, tasks, templateData);
-    const path = 'cache/' + fileName;
+    const path = 'cache/' + user.id.toString() + '/' + fileName;
     const isExist_1 = await this.ossService.existObject(path);
     if (isExist_1) {
       await this.ossService.deleteOne(path);
@@ -304,15 +304,7 @@ export class TaskService {
         data: null,
       };
     }
-    // const filePath = path.resolve(cachePath, history.fileName);
-    // if (!fs.existsSync(filePath)) {
-    //   return {
-    //     code: 500,
-    //     msg: '无当日日报文件，请重新生成',
-    //     data: null,
-    //   };
-    // }
-    const path = 'cache/' + history.fileName;
+    const path = 'cache/' + userId.toString() + '/' + history.fileName;
     const isExist = await this.ossService.existObject(path);
     if (!isExist) {
       return {
@@ -371,29 +363,29 @@ export class TaskService {
         data: null,
       };
     }
-    const filePath = path.resolve(uploadsPath, user.monthlyTemplate);
-    if (!fs.existsSync(filePath)) {
+
+    const filePath =
+      'uploads/' + user.id.toString() + '/' + user.monthlyTemplate;
+    const isExist = this.ossService.existObject(filePath);
+    if (!isExist) {
       return {
         code: 500,
         msg: '月报模板文件丢失，请重新上传',
         data: null,
       };
     }
-    const templateData = await readTemplate(filePath);
-    // 不存在 cachePath路径则创建
-    if (!fs.existsSync(cachePath)) {
-      fs.mkdirSync(cachePath);
+    let url = await this.ossService.getFileSignatureUrl(filePath);
+    if (!url) {
+      return {
+        code: 500,
+        msg: '月报模板文件丢失，请重新上传',
+        data: null,
+      };
     }
-    const CachePath = path.resolve(cachePath, fileName);
-    fs.copyFile(filePath, CachePath, (err) => {
-      if (err) {
-        return {
-          code: 500,
-          msg: '日报模板文件丢失，请重新上传',
-          data: null,
-        };
-      }
-    });
+    if (!url.includes('https')) {
+      url = url.replace('http', 'https');
+    }
+    const templateData = await readTemplate(url);
     const tasks = await this.task.find({
       where: {
         user: {
@@ -413,12 +405,19 @@ export class TaskService {
       item['no'] = index + 1;
       item['fullTitle'] = item['mainTitle'] + '-' + item['title'];
     });
-    const res = await writeTemplate(cachePath, tasks, templateData);
-    if (res) {
+    const saveBuffer = await writeTemplate(url, tasks, templateData);
+    const path = 'cache/' + user.id.toString() + '/' + fileName;
+    const isExist_1 = await this.ossService.existObject(path);
+    if (isExist_1) {
+      await this.ossService.deleteOne(path);
+    }
+    const streams = bufferToStream(saveBuffer);
+    const fileurl = await this.ossService.putStream(streams, path);
+    if (fileurl) {
       const his = await this.addTaskReportHistory(
         userId,
         fileName,
-        'url',
+        fileurl,
         2,
         false,
         null,
@@ -596,7 +595,7 @@ export class TaskService {
       };
     }
     const isExist = await this.ossService.existObject(
-      'cache/' + history.fileName,
+      'cache/' + user.id.toString() + '/' + history.fileName,
     );
     if (!isExist) {
       return {
@@ -606,7 +605,7 @@ export class TaskService {
       };
     }
     const url = await this.ossService.getFileSignatureUrl(
-      'cache/' + history.fileName,
+      'cache/' + user.id.toString() + '/' + history.fileName,
     );
     return {
       code: 200,

@@ -45,12 +45,25 @@ export class OssController {
     const fileName = `${userId}__${type == 1 ? 'daily' : 'monthly'}__${
       new Date().getTime() + '_' + file.originalname
     }`;
-    if (user.dailyTemplate) {
-      await this.ossService.deleteOne('uploads/' + user.dailyTemplate);
+
+    if (type == 1) {
+      if (user.dailyTemplate) {
+        await this.ossService.deleteOne(
+          'uploads/' + user.id.toString() + '/' + user.dailyTemplate,
+        );
+      }
+      user.dailyTemplate = fileName;
     }
-    user.dailyTemplate = fileName;
+    if (type == 2) {
+      if (user.monthlyTemplate) {
+        await this.ossService.deleteOne(
+          'uploads/' + user.id.toString() + '/' + user.monthlyTemplate,
+        );
+      }
+      user.monthlyTemplate = fileName;
+    }
     await this.user.save(user);
-    const path = 'uploads/' + fileName;
+    const path = 'uploads/' + user.id.toString() + '/' + fileName;
     const streams = bufferToStream(file.buffer);
     const url = await this.ossService.putStream(streams, path);
     if (url) {
@@ -84,7 +97,7 @@ export class OssController {
     }
     if (type == 1) {
       const fileName = user.dailyTemplate;
-      const path = 'uploads/' + fileName;
+      const path = 'uploads/' + user.id.toString() + '/' + fileName;
       const isExist = await this.ossService.existObject(path);
       if (!isExist) {
         return {
@@ -112,7 +125,7 @@ export class OssController {
     }
     if (type == 2) {
       const fileName = user.monthlyTemplate;
-      const path = 'uploads/' + fileName;
+      const path = 'uploads/' + user.id.toString() + '/' + fileName;
       const isExist = await this.ossService.existObject(path);
       if (!isExist) {
         return {
