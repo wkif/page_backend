@@ -4,10 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Like, Repository } from 'typeorm';
 import { UserService } from '../user/user.service';
 import { OssService } from '../oss/oss.service';
-import * as path from 'path';
-import * as fs from 'fs';
 import * as nodemailer from 'nodemailer';
-import config from 'src/config/index';
 import readTemplate from 'src/utils/readTemplate';
 import writeTemplate from 'src/utils/writeTemplate';
 import createEmailText from 'src/utils/emailText';
@@ -16,7 +13,6 @@ import creatFileHash from 'src/utils/createHash';
 import { format } from 'date-fns';
 import { HttpService } from '@nestjs/axios';
 import bufferToStream from 'src/utils/bufferToStream';
-const { uploadsPath, cachePath } = config()();
 @Injectable()
 export class TaskService {
   constructor(
