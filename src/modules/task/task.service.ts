@@ -540,17 +540,16 @@ export class TaskService {
         data: null,
       };
     }
-
-    const filePath = path.resolve(cachePath, history.fileName);
-    if (!fs.existsSync(filePath)) {
+    const filePath = 'cache/' + userId.toString() + '/' + history.fileName;
+    const isExist = await this.ossService.existObject(filePath);
+    if (!isExist) {
       return {
         code: 500,
         msg: '文件不存在',
         data: null,
       };
     }
-
-    fs.unlinkSync(filePath);
+    await this.ossService.deleteOne(filePath);
     history.fileExist = false;
     await this.taskHistory.save(history);
     return {
@@ -587,6 +586,7 @@ export class TaskService {
         fileExist: true,
       },
     });
+    console.log('history', history);
     if (!history) {
       return {
         code: 500,
@@ -595,7 +595,7 @@ export class TaskService {
       };
     }
     const isExist = await this.ossService.existObject(
-      'cache/' + user.id.toString() + '/' + history.fileName,
+      'cache/' + userId.toString() + '/' + history.fileName,
     );
     if (!isExist) {
       return {
@@ -607,6 +607,7 @@ export class TaskService {
     const url = await this.ossService.getFileSignatureUrl(
       'cache/' + user.id.toString() + '/' + history.fileName,
     );
+    console.log('url', url);
     return {
       code: 200,
       msg: 'ok',

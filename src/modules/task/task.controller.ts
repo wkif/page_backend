@@ -432,31 +432,28 @@ export class TaskController {
     return await this.taskService.getHistoryList(userId, page, type);
   }
   @Post('deleteHistoryFile')
-  async deleteHistoryFile(@Body() data: { id: number; userId: number }) {
-    const { id, userId } = data;
-    if (!id || !userId) {
+  async deleteHistoryFile(@Body() data: { hisId: number; userId: number }) {
+    const { hisId, userId } = data;
+    if (!hisId || !userId) {
       return {
         code: 500,
         msg: '请完整填写信息',
         data: {},
       };
     }
-    return await this.taskService.deleteHistoryFile(id, userId);
+    return await this.taskService.deleteHistoryFile(hisId, userId);
   }
 
   @Post('downloadHistoryFile')
-  async downloadHistoryFile(
-    @Res() response: Response,
-    @Body() data: { userId: number; hisId },
-  ) {
+  async downloadHistoryFile(@Body() data: { userId: number; hisId: number }) {
+    console.log('data', data);
     const { userId, hisId } = data;
     if (!userId || !hisId) {
-      response.send({
+      return {
         code: 500,
         msg: '请完整填写信息',
         data: null,
-      });
-      return;
+      };
     }
     return await this.taskService.downloadHistoryFile(userId, hisId);
   }
