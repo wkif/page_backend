@@ -67,4 +67,8 @@ export class User {
     default: '',
   })
   emailReceiver: string;
+  @Column({
+    default: '',
+  })
+  newsTypes: string;
 }

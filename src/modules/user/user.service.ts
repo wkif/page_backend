@@ -81,6 +81,15 @@ export class UserService {
     if (emailReceiver) user.emailReceiver = emailReceiver;
     return this.user.save(user);
   }
+  async updateNewsTypes(id: number, newsTypes: string) {
+    const user = await this.user.findOne({
+      where: {
+        id,
+      },
+    });
+    if (newsTypes) user.newsTypes = newsTypes;
+    return this.user.save(user);
+  }
 
   // async addTemplate(id: number, template: string, type: number) {
   //   console.log('type', type, template);

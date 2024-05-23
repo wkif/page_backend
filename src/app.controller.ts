@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AppService } from './app.service';
 import { Public } from './common/public.decorator';
@@ -39,6 +39,14 @@ export class AppController {
   async getHolidayData(@Body() data: { date: string }) {
     const res = await this.httpService
       .get(`https://api.apihubs.cn/holiday/get?date=${data.date}&cn=1&size=31`)
+      .pipe(map((res) => res.data));
+    return res;
+  }
+  @Public()
+  @Get('getNewsApi/:type')
+  async getNewsApi(@Param() params: { type: string }) {
+    const res = await this.httpService
+      .get(`https://api-hot.efefee.cn/${params.type}?cache=true`)
       .pipe(map((res) => res.data));
     return res;
   }

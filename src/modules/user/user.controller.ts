@@ -97,6 +97,7 @@ export class UserController {
                 email: user.email,
                 username: user.username,
                 avatar: user.avatar,
+                newsTypes: user.newsTypes,
               },
             },
           };
@@ -146,6 +147,7 @@ export class UserController {
           emailReceiver: user.emailReceiver,
           dailyTemplate: user.dailyTemplate,
           monthlyTemplate: user.monthlyTemplate,
+          newsTypes: user.newsTypes,
         },
       };
     } else {
@@ -209,6 +211,32 @@ export class UserController {
       emailAuth,
       emailReceiver,
     );
+    if (res) {
+      return {
+        code: 200,
+        msg: 'ok',
+        data: {},
+      };
+    } else {
+      return {
+        code: 400,
+        msg: 'no user',
+        data: {},
+      };
+    }
+  }
+  @Post('updateNewsTypes')
+  async updateNewsTypes(@Body() data: { id: number; newsTypes: string }) {
+    const { id, newsTypes } = data;
+    const user = await this.userService.getUserByid(id);
+    if (!user) {
+      return {
+        code: 400,
+        msg: 'no user',
+        data: {},
+      };
+    }
+    const res = await this.userService.updateNewsTypes(id, newsTypes);
     if (res) {
       return {
         code: 200,
