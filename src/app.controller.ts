@@ -5,7 +5,7 @@ import { Public } from './common/public.decorator';
 import { catchError, map } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
-
+import axios from 'axios';
 @Controller()
 export class AppController {
   constructor(
@@ -58,15 +58,19 @@ export class AppController {
   @Public()
   @Get('getNewsApi/:type')
   async getNewsApi(@Param() params: { type: string }) {
-    const { data } = await firstValueFrom(
-      this.httpService
-        .get(`https://api-hot.efefee.cn/${params.type}?cache=true`)
-        .pipe(
-          catchError((error: AxiosError) => {
-            console.log('error', error);
-            throw 'An error happened!';
-          }),
-        ),
+    // const { data } = await firstValueFrom(
+    //   this.httpService
+    //     .get(`https://api-hot.efefee.cn/${params.type}?cache=true`)
+    //     .pipe(
+    //       catchError((error: AxiosError) => {
+    //         console.log('error', error);
+    //         throw 'An error happened!';
+    //       }),
+    //     ),
+    // );
+    // return data;
+    const { data } = await axios.get(
+      `https://api-hot.efefee.cn/${params.type}?cache=true`,
     );
     return data;
   }
