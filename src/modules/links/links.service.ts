@@ -165,6 +165,90 @@ export class LinksService {
       };
     }
   }
+
+  async getLinkById(id: number, userId: number) {
+    const user = await this.userService.getUserByid(userId);
+    if (!user) {
+      return {
+        code: 500,
+        msg: 'no user',
+        data: {},
+      };
+    }
+    const link = await this.link.findOne({
+      relations: ['category'],
+      where: {
+        id,
+        user: { id: user.id },
+      },
+    });
+    if (!link) {
+      return {
+        code: 500,
+        msg: 'no link',
+        data: {},
+      };
+    }
+    const data = JSON.parse(JSON.stringify(link));
+    data.categoryId = link.category.id;
+    delete data.category;
+    return {
+      code: 200,
+      msg: 'ok',
+      data,
+    };
+  }
+  async editLink(data: LinkType) {
+    const { id, title, description, url, userId, categoryId, tags, github } =
+      data;
+    const user = await this.userService.getUserByid(userId);
+    if (!user) {
+      return {
+        code: 400,
+        msg: 'no user',
+        data: {},
+      };
+    }
+    const link = await this.link.findOne({
+      where: {
+        id,
+        user: { id: user.id },
+      },
+    });
+    if (!link) {
+      return {
+        code: 402,
+        msg: 'no link',
+        data: {},
+      };
+    }
+    const category = await this.category.findOne({
+      where: {
+        id: categoryId,
+        user: { id: user.id },
+      },
+    });
+    if (!category) {
+      return {
+        code: 402,
+        msg: 'no category',
+        data: {},
+      };
+    }
+    link.title = title;
+    link.url = url;
+    link.description = description;
+    link.category = category;
+    link.tags = tags;
+    link.github = github;
+    await this.link.save(link);
+    return {
+      code: 200,
+      msg: 'ok',
+      data: {},
+    };
+  }
+
   async getLinks(userId: number) {
     const links = await this.link.find({
       relations: ['category'],

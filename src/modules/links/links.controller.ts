@@ -60,6 +60,34 @@ export class LinksController {
     }
     return await this.linksService.addLink(data);
   }
+
+  // get Link by id
+  @Post('getLinkById')
+  async getLinkById(@Body() data: { id: number; userId: number }) {
+    const { id, userId } = data;
+    if (!id || !userId) {
+      return {
+        code: 500,
+        msg: '请完整填写信息',
+        data: {},
+      };
+    }
+    return await this.linksService.getLinkById(id, userId);
+  }
+  // edit link
+  @Post('editLink')
+  async editLink(@Body() data: LinkType) {
+    const { id, title, url, userId, categoryId } = data;
+    if (!id || !title || !url || !userId || !categoryId) {
+      return {
+        code: 500,
+        msg: '请完整填写信息',
+        data: {},
+      };
+    }
+    return await this.linksService.editLink(data);
+  }
+
   // get links
   @Get('getLinks/:userId')
   async getLinks(@Param() params: { userId: number }) {
