@@ -91,37 +91,6 @@ export class UserService {
     return this.user.save(user);
   }
 
-  // async addTemplate(id: number, template: string, type: number) {
-  //   console.log('type', type, template);
-  //   const user = await this.user.findOne({
-  //     where: {
-  //       id,
-  //     },
-  //   });
-  //   if (type == 1) {
-  //     if (user.dailyTemplate) {
-  //       const filePath = path.resolve(uploadsPath, user.dailyTemplate);
-  //       if (fs.existsSync(filePath)) {
-  //         fs.unlinkSync(filePath);
-  //       }
-  //     }
-  //     user.dailyTemplate = template;
-  //   } else if (type == 2) {
-  //     if (user.monthlyTemplate) {
-  //       const filePath = path.resolve(uploadsPath, user.monthlyTemplate);
-  //       if (fs.existsSync(filePath)) {
-  //         fs.unlinkSync(filePath);
-  //       }
-  //     }
-  //     user.monthlyTemplate = template;
-  //   }
-  //   await this.user.save(user);
-  //   return {
-  //     code: 200,
-  //     msg: 'ok',
-  //     data: {},
-  //   };
-  // }
   async getTemplate(id: number, type: number) {
     const user = await this.user.findOne({
       where: {
