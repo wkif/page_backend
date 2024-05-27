@@ -4,8 +4,7 @@
 /dist
 
 # env
-/src/config/dev.ts
-/src/config/prod.ts
+# /src/config/env/*
 
 # Logs
 logs
@@ -39,12 +38,6 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# dotenv environment variable files
-# .env
-.env.dev
-.env.test.local
-.env.production.local
-.env.local
 
 # temp directory
 .temp

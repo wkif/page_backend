@@ -1,5 +1,5 @@
-import developmentConfig from './dev';
-import productionConfig from './prod';
+import developmentConfig from './env/dev';
+import productionConfig from './env/prod';
 
 const configs = {
   dev: developmentConfig,
